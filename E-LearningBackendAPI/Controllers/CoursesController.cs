@@ -86,7 +86,7 @@ namespace E_LearningBackendAPI.Controllers
 
         // DELETE: api/Courses/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCourse(Guid id)
+        public async Task<IActionResult> DeleteCourse(int id)
         {
             var Course = await _context.Courses.FindAsync(id);
             if (Course == null)
