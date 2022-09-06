@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using E_LearningBackendAPI.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +30,11 @@ namespace E_LearningBackendAPI
         {
 
             services.AddControllers();
+
+            var connectionString = Configuration["ConnectionStrings:MySql"];
+            services.AddDbContext<ELearningDBContext>(o => o.UseMySql(connectionString,
+                MySqlServerVersion.LatestSupportedServerVersion));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "E_LearningBackendAPI", Version = "v1" });
