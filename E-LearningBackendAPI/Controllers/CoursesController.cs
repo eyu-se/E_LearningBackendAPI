@@ -69,7 +69,21 @@ namespace E_LearningBackendAPI.Controllers
             return NoContent();
         }
 
-        
+        // DELETE: api/courses/2
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCourse(int id)
+        {
+            if (!DBSimulator.CoursesDb.Exists(c => c.Id == id))
+            {
+                return NotFound();
+            }
+
+            int index = DBSimulator.CoursesDb.IndexOf(DBSimulator.CoursesDb.Find(c => c.Id == id));
+            DBSimulator.CoursesDb.RemoveAt(index);
+
+            return NoContent();
+        }
+
 
 
         //// GET: api/courses     take 1
