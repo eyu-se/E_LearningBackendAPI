@@ -29,10 +29,12 @@
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
     <None Remove="Microsoft.EntityFrameworkCore.Tools" />
     <None Remove="Pomelo.EntityFrameworkCore.MySql" />
+    <None Remove="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="Controllers\" />
     <Folder Include="Contexts\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>

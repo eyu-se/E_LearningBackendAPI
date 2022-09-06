@@ -28,13 +28,37 @@ namespace E_LearningBackendAPI.Controllers
             return await _context.Courses.ToListAsync();
         }
 
+        // GET: api/courses/search?query={query}&category={category}&author={author}
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Course>>> SearchCourses(string query,string category, string author)
+        {
+            var searchQuery = _context.Courses.AsQueryable();
+
+            if (query != null) {
+                searchQuery = searchQuery.Where<Course>(c => c.Name.Contains(query) || c.Description.Contains(query));
+                  
+            }
+            if (category != null)
+            {
+                searchQuery = searchQuery.Where<Course>(c => c.Category.Contains(category));
+
+            }
+
+            if (author != null)
+            {
+                searchQuery = searchQuery.Where<Course>(c => c.Author.Contains(author));
+
+            }
+
+            return await searchQuery.ToListAsync();
+        }
 
 
         // GET: api/Courses/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Course>> GetCourse(int id)
         {
-            var Course = await _context.Courses.FindAsync(id);
+            var Course = await _context.Courses.Include("Lessons").FirstAsync(c => c.Id == id);
 
             if (Course == null)
             {
@@ -43,6 +67,18 @@ namespace E_LearningBackendAPI.Controllers
 
             return Course;
         }
+
+
+        // GET: api/Courses/{id}/Lessons
+        [HttpGet("{id}/Lessons")]
+        public async Task<ActionResult<IEnumerable<Lesson>>> GetLessonsForCourse(int id)
+        {
+            var Course = await _context.Courses.Include("Lessons").FirstAsync(c => c.Id == id);
+
+            return Course.Lessons;
+        }
+
+
 
         // PUT: api/Courses/5
         [HttpPut("{id}")]
@@ -104,6 +140,8 @@ namespace E_LearningBackendAPI.Controllers
         {
             return _context.Courses.Any(e => e.Id == id);
         }
+
+        
 
     }
 }

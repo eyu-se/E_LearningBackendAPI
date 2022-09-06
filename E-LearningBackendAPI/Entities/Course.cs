@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace E_LearningBackendAPI.Entities
@@ -20,7 +21,6 @@ namespace E_LearningBackendAPI.Entities
         [StringLength(60, ErrorMessage = "Author can't be longer than 60 characters")]
         public string Author { get; set; }
 
-        public TimeSpan Duration { get; set; }
-
+        public List<Lesson> Lessons { get; } = new List<Lesson>();
     }
 }
