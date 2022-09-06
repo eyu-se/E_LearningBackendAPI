@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using E_LearningBackendAPI.Contexts;
 using E_LearningBackendAPI.Entities;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace E_LearningBackendAPI.Controllers
 {
@@ -14,107 +14,96 @@ namespace E_LearningBackendAPI.Controllers
 
     public class CoursesController : ControllerBase
     {
+        private readonly ELearningDBContext _context;
 
-        // GET: api/courses
-        [HttpGet]
-        public ActionResult<IEnumerable<Course>> GetCourses()
+        public CoursesController(ELearningDBContext context)
         {
-            List<Course> courses = DBSimulator.CoursesDb;
+            _context = context;
+        }
 
-            return courses;
+        // GET: api/Courses
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
+        {
+            return await _context.Courses.ToListAsync();
         }
 
 
-        // GET: api/courses/2
-        [HttpGet("{id}")]
-        public ActionResult<Course> GetCourse(int id)
-        {
-            var course = DBSimulator.CoursesDb.Find(c => c.Id == id);
 
-            if (course == null)
+        // GET: api/Courses/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Course>> GetCourse(int id)
+        {
+            var Course = await _context.Courses.FindAsync(id);
+
+            if (Course == null)
             {
                 return NotFound();
             }
 
-            return course;
+            return Course;
         }
 
-        // POST: api/courses
-        [HttpPost]
-        public ActionResult<Course> CreateCourse([FromBody] Course course)
-        {
-            
-            DBSimulator.CoursesDb.Add(course);
-
-            return CreatedAtAction("GetCourse", new { id = course.Id }, course);
-        }
-
-
-        // PUT: api/courses/2
+        // PUT: api/Courses/5
         [HttpPut("{id}")]
-        public IActionResult UpdateCourse(int id, Course course)
+        public async Task<IActionResult> PutCourse(int id, Course Course)
         {
-            if (id != course.Id)
+            if (id != Course.Id)
             {
                 return BadRequest();
             }
 
-            if (DBSimulator.CoursesDb.Exists(c => c.Id == id)) {
-                int index = DBSimulator.CoursesDb.IndexOf(DBSimulator.CoursesDb.Find(c => c.Id == id));
-                DBSimulator.CoursesDb.RemoveAt(index);
-                DBSimulator.CoursesDb.Insert(index, course);
-            }
+            _context.Entry(Course).State = EntityState.Modified;
 
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CourseExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return NoContent();
         }
 
-        // DELETE: api/courses/2
-        [HttpDelete("{id}")]
-        public IActionResult DeleteCourse(int id)
+        // POST: api/Courses
+        [HttpPost]
+        public async Task<ActionResult<Course>> PostCourse(Course Course)
         {
-            if (!DBSimulator.CoursesDb.Exists(c => c.Id == id))
+            _context.Courses.Add(Course);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetCourse", new { id = Course.Id }, Course);
+        }
+
+        // DELETE: api/Courses/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCourse(Guid id)
+        {
+            var Course = await _context.Courses.FindAsync(id);
+            if (Course == null)
             {
                 return NotFound();
             }
 
-            int index = DBSimulator.CoursesDb.IndexOf(DBSimulator.CoursesDb.Find(c => c.Id == id));
-            DBSimulator.CoursesDb.RemoveAt(index);
+            _context.Courses.Remove(Course);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-
-
-        //// GET: api/courses     take 1
-        //[HttpGet]
-        //public ActionResult<IEnumerable<Course>> GetCourses()
-        //{
-        //    List<Course> courses = new List<Course>();
-        //    courses.Add( new Course()
-        //        {
-        //            Id = 1,
-        //            Name = "Deplomacy 101",
-        //            Description = "Diplomacy is the main instrument of foreign policy",
-        //            Category = "Deplomacy",
-        //            Author = "Mathew",
-        //            Duration = new TimeSpan(30, 0, 0, 0)
-
-        //        } );
-
-        //    courses.Add( new Course()
-        //        {
-        //            Id = 1,
-        //            Name = "International Relations 101",
-        //            Description = " international studies is " +
-        //            "the scientific study of interactions between sovereign states",
-        //            Category = "International Relations",
-        //            Author = "Jhon",
-        //            Duration = new TimeSpan(60, 0, 0, 0)
-
-        //        } );
-        //    return courses;
-        //}
+        private bool CourseExists(int id)
+        {
+            return _context.Courses.Any(e => e.Id == id);
+        }
 
     }
 }
