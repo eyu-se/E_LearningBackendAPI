@@ -12,6 +12,7 @@ namespace E_LearningBackendAPI.Contexts
         }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
+        public DbSet<CourseCategory> CourseCategories { get; set; }
 
 
     }

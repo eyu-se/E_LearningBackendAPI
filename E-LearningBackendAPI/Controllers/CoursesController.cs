@@ -32,7 +32,7 @@ namespace E_LearningBackendAPI.Controllers
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<Course>>> SearchCourses(string query,string category, string author)
         {
-            var searchQuery = _context.Courses.AsQueryable();
+            var searchQuery = _context.Courses.Include("CourseCategory").AsQueryable();
 
             if (query != null) {
                 searchQuery = searchQuery.Where<Course>(c => c.Name.Contains(query) || c.Description.Contains(query));
@@ -40,7 +40,7 @@ namespace E_LearningBackendAPI.Controllers
             }
             if (category != null)
             {
-                searchQuery = searchQuery.Where<Course>(c => c.Category.Contains(category));
+                searchQuery = searchQuery.Where<Course>(c => c.CourseCategory.Name.Contains(category));
 
             }
 

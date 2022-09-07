@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_LearningBackendAPI.Migrations
 {
     [DbContext(typeof(ELearningDBContext))]
-    [Migration("20220906174758_AddedLesson")]
-    partial class AddedLesson
+    [Migration("20220906211136_AddedCourseCategory")]
+    partial class AddedCourseCategory
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,9 +29,8 @@ namespace E_LearningBackendAPI.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("CourseCategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
@@ -43,7 +42,28 @@ namespace E_LearningBackendAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CourseCategoryId");
+
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("E_LearningBackendAPI.Entities.CourseCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CourseCategories");
                 });
 
             modelBuilder.Entity("E_LearningBackendAPI.Entities.Lesson", b =>
@@ -73,10 +93,19 @@ namespace E_LearningBackendAPI.Migrations
                     b.ToTable("Lessons");
                 });
 
+            modelBuilder.Entity("E_LearningBackendAPI.Entities.Course", b =>
+                {
+                    b.HasOne("E_LearningBackendAPI.Entities.CourseCategory", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("CourseCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("E_LearningBackendAPI.Entities.Lesson", b =>
                 {
                     b.HasOne("E_LearningBackendAPI.Entities.Course", null)
-                        .WithMany("lessons")
+                        .WithMany("Lessons")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -84,7 +113,12 @@ namespace E_LearningBackendAPI.Migrations
 
             modelBuilder.Entity("E_LearningBackendAPI.Entities.Course", b =>
                 {
-                    b.Navigation("lessons");
+                    b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("E_LearningBackendAPI.Entities.CourseCategory", b =>
+                {
+                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,14 +2,16 @@
 using E_LearningBackendAPI.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace E_LearningBackendAPI.Migrations
 {
     [DbContext(typeof(ELearningDBContext))]
-    partial class ELearningDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220906212440_updateCategory")]
+    partial class updateCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
